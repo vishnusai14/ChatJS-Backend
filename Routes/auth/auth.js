@@ -1,6 +1,6 @@
 const express = require('express')
 const Router = express.Router()
-const userFunction = require('../../database/functions/functions')
+const userFunction = require('../../database/functions/userFunctions')
 
 
 //'/api/v1/auth'

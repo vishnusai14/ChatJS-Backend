@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken')
-const userFunction = require('../../database/functions/functions')
+const userFunction = require('../../database/functions/userFunctions')
 
 const Router = require('express').Router()
 

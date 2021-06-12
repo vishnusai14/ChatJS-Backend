@@ -31,6 +31,9 @@
     <Content Include=".env">
       <SubType>Code</SubType>
     </Content>
+    <Content Include=".gitignore">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="database\db.js">
       <SubType>Code</SubType>
     </Content>

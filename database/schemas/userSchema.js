@@ -2,9 +2,6 @@ const mongoose = require('mongoose')
 
 const userSchema = new mongoose.Schema({
 
-    socketId: {
-        type : String
-    },
     userId: {
         type : String
     },
