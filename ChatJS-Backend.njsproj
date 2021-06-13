@@ -37,7 +37,19 @@
     <Content Include="database\db.js">
       <SubType>Code</SubType>
     </Content>
-    <Content Include="database\functions\functions.js">
+    <Content Include="database\functions\messageToSendFunctions.js">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="database\functions\socketFunctions.js">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="database\functions\userFunctions.js">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="database\schemas\messageToSendSchema.js">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="database\schemas\socketSchema.js">
       <SubType>Code</SubType>
     </Content>
     <Content Include="database\schemas\userSchema.js">

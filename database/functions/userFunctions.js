@@ -126,8 +126,38 @@ const getUser = (req, res) => {
 
 }
 
+const getAllUser = (req, res) => {
+    userModel.find({} , (err, found) => {
+        if(err) {
+            res.status(500).send({data : 'Internal Server Error'})
+            res.end()
+        }else if(found) {
+            res.status(200).send({data : found})
+            res.end()
+        }
+    }) 
+}
+
+
+const checkUser = (req, res) => {
+    userModel.findOne({userId : req.body.id} , (err, found) => {
+        if(err) {
+            res.status(500).send({data : 'Internal Server Error'})
+            res.end()
+        }else if(found) {
+            res.status(200).send({data : 'User Found'})
+            res.end()
+        }else {
+            res.status(400).send({data : 'User Not Found'})
+            res.end()
+        }
+    })
+}
+
 module.exports = {
     save: saveUser,
     login: loginUser,
-    getUser : getUser
+    getUser : getUser,
+    getAllUser : getAllUser,
+    checkUser :checkUser
 }

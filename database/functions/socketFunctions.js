@@ -7,7 +7,7 @@ const createOrModifySocketId = (newUserData) => {
             console.log(err)
         } else {
             if (found) {
-
+                console.log(found)
                 socketModel.findOneAndUpdate({ clientEmail: newUserData.email }, { socketId: newUserData.id }, (err, res) => {
                     if (err) {
                         console.log(err)
@@ -51,7 +51,7 @@ const userDisconnects = (userData) => {
         if (err) {
             console.log(err)
         } else {
-            console.log(res)
+            console.log("This is From Another Response" , res)
         }
 
     })
