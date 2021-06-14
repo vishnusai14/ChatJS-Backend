@@ -145,7 +145,7 @@ const checkUser = (req, res) => {
             res.status(500).send({data : 'Internal Server Error'})
             res.end()
         }else if(found) {
-            res.status(200).send({data : 'User Found'})
+            res.status(200).send({data : found.email})
             res.end()
         }else {
             res.status(400).send({data : 'User Not Found'})

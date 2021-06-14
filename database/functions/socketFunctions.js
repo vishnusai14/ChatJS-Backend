@@ -1,6 +1,9 @@
+require('dotenv').config()
 const socketModel = require('../db').socketModel
+const userModel = require("../db").user
 const messageFunction = require('../functions/messageToSendFunctions')
-
+const jwt = require('jsonwebtoken')
+const SECRET = process.env.SECRET
 const createOrModifySocketId = (newUserData) => {
     socketModel.findOne({ clientEmail: newUserData.email }, (err, found) => {
         if (err) {
@@ -30,28 +33,71 @@ const createOrModifySocketId = (newUserData) => {
 
 const sendOrStoreMessage = (msgData, io) => {
 
-    socketModel.findOne({ clientEmail: msgData.email }, (err, found) => {
-        if (err) {
-            console.log(err)
-        } else if (found) {
-            const id = found.socketId
-            if (id === undefined) {
-                messageFunction.saveNewMessage(msgData)
-            } else {
-                io.to(id).emit('msgReceive', {data : msgData})
-            }
+    const token = msgData.token
+    console.log("This is From Send Or Store Message" , token)
+    try {
+
+        const user = jwt.verify(token, SECRET)
+        if(user) {
+            console.log(user, msgData)
+            socketModel.findOne({ clientEmail: msgData.email }, (err, found) => {
+                if (err) {
+                    console.log(err)
+                } else if (found) {
+                    const id = found.socketId
+                    userModel.findOne({email : user.email} , (err, result) => {
+                        if(err) {
+                            console.log(err)
+                        }else if(found) {
+                            if (id === undefined) {
+                       
+                                const msgDataToSend = {
+                                    senderEmail : user.email,
+                                    receiverEmail : msgData.email,
+                                    message : msgData.msg,
+                                    userId : result.userId,
+                                    userName : result.userName
+                                    
+                                }
+                                messageFunction.saveNewMessage(msgDataToSend)
+                            } else {
+                                const msgDataToSend = {
+                                    senderEmail : user.email,
+                                    receiverEmail : msgData.email,
+                                    message : msgData.msg,
+                                    userId : result.userId,
+                                    userName : result.userName
+                                }
+                                messageFunction.saveNewMessage(msgDataToSend)
+                                console.log(id)
+                                io.to(id).emit('msgReceive', {data : msgDataToSend })
+                            }
+                        }
+                    })    
+                    }
+                    
+                   
+            })
+            
+        }else {
+            console.log("Err")
         }
-    })
+
+
+    }catch(err) {
+        console.log(err)
+    }
+
     
 }
 
-const userDisconnects = (userData) => {
+const userDisconnects = (id) => {
 
-    socketModel.findOneAndUpdate({ clientEmail: userData.email }, { socketId: undefined }, (err, res) => {
+    socketModel.findOneAndUpdate({ socketId: id }, { socketId: undefined }, (err, res) => {
         if (err) {
             console.log(err)
         } else {
-            console.log("This is From Another Response" , res)
+            console.log("This is From User Disconnect Response")
         }
 
     })

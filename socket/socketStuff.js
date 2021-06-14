@@ -14,7 +14,7 @@ const socketConnection = (server) => {
         }
     })
     io.on('connect', socket => {
-        console.log(socket.id)
+        console.log("Socket Has Been Connected" , socket.id)
         socket.on('newUser' , (data) => {
             console.log('New User ')
             try {
@@ -31,6 +31,7 @@ const socketConnection = (server) => {
             }    
         })
         socket.on('msg', (msgData) => {
+            console.log("Message Event Fired Up")
             socketFunction.sendOrStoreMessage(msgData, io)
             
         })
@@ -42,9 +43,9 @@ const socketConnection = (server) => {
 
         })
 
-        // socket.on('disconnecting', (userData) => {
-        //     socketFunction.userDisconnects(userData)
-        // })
+        socket.on('disconnecting', (userData) => {
+            socketFunction.userDisconnects(socket.id)
+        })
     })
     
 }

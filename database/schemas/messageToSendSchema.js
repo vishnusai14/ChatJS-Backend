@@ -13,6 +13,12 @@ const messageToSendSchema = new mongoose.Schema({
     message: {
         type : String
     },
+    userId : {
+        type : String
+    },
+    userName : {
+        type : String
+    }
     
 })
 
