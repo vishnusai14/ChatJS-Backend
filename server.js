@@ -4,11 +4,11 @@ const app = express()
 
 const db = require('../ChatJS-Backend/database/db')
 const socketConnect = require('../ChatJS-Backend/socket/socketStuff')
-app.use(express.json())
+app.use(express.json({limit : '50mb'}))
 app.use(cors())
 const socket = require('socket.io')
 
-db.connect('mongodb://localhost:27017/ChatJsvTwo')
+db.connect('mongodb://localhost:27017/ChatJsvFive')
 
 
 const PORT = process.env.PORT || 1331

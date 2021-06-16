@@ -5,12 +5,25 @@ const generateUniqueId = require('generate-unique-id')
 const jwt = require('jsonwebtoken')
 const SECRET = process.env.SECRET
 
+
+
+//Image Kit
+
+const ImageKit = require("imagekit")
+
+const imagekit = new ImageKit({
+    publicKey : process.env.PUBLICKEY,
+    privateKey : process.env.PRIVATEKEY,
+    urlEndpoint : process.env.URL
+})
+
 const saveUser = (req, res) => {
 
     const userName = req.body.userName
     const password = req.body.password
     const email = req.body.email
     const socketId = req.body.socketId
+    const expoToken = req.body.expoToken
 
     userModel.findOne({ email: email }, (err, found) => {
 
@@ -37,7 +50,8 @@ const saveUser = (req, res) => {
                         userName: userName,
                         email: email,
                         password: hashedPassword,
-                        socketId : socketId
+                        socketId : socketId,
+                        expoToken : expoToken
                     })
                     newUserModel.save()
                     const token = jwt.sign({email : email, id: userId}, SECRET)
@@ -54,7 +68,7 @@ const saveUser = (req, res) => {
 const loginUser = (req, res) => {
     const email = req.body.email
     const password = req.body.password
-
+    console.log("This is From Login " ,email,  password)
     userModel.findOne({ email: email }, (err, found) => {
         if (err) {
             res.status(500).send({data : 'Internal Server Error'})
@@ -100,7 +114,8 @@ const getUser = (req, res) => {
                         let userData = {
                             userId: found.userId,
                             userName: found.userName,
-                            userEmail: found.email 
+                            userEmail: found.email,
+                            userImage : found.image
                         }
                         res.status(200).send({ data: userData })
                         res.end()
@@ -154,10 +169,115 @@ const checkUser = (req, res) => {
     })
 }
 
+const uploadImage = (req, res) => {
+    const baseUrl = req.body.url
+    const token = req.body.token
+
+    try{
+        const user = jwt.verify(token, SECRET)
+        const userEmail = user.email
+        const userId = user.id
+        const fileName = userEmail+"_"+userId
+
+
+        userModel.findOne({email : userEmail} , (err, found) => {
+            if(err) {
+                res.status(500).send({data : 'Internal Server Error'})
+                res.end()
+            }else if(found) {
+
+                if(found.imageId) {
+
+                    imagekit.deleteFile(found.imageId, (error, result) =>  {
+                        if(error) {
+                            res.status(500).send({data : 'Internal Server Error'})
+                            res.end()
+                        }
+                        else {
+                            imagekit.upload({
+                                file : baseUrl, //required
+                                fileName : fileName,   //required
+                                tags: [userEmail, "UserPhoto"]
+                            }, (error, result) => {
+                                if(error)  {
+                                    res.status(500).send({data : 'Internal Server Error'})
+                                    res.end()
+                                }
+                                else {
+                                    userModel.findOneAndUpdate({email : userEmail} , {image : result.url, imageId : result.fileId} , (err, response) => {
+                                        if(err) {
+                                            res.status(500).send({data : 'Internal Server Error'})
+                                            res.end()
+                                        }else {
+                                            res.status(200).send({data : result.url})
+                                            res.end()
+                                        }
+                                    })
+                                }
+                            }) 
+                        }
+                    })
+
+                }else {
+
+                    imagekit.upload({
+                        file : baseUrl, //required
+                        fileName : fileName,   //required
+                        tags: [userEmail, "UserPhoto"]
+                    }, (error, result) => {
+                        if(error)  {
+                            res.status(500).send({data : 'Internal Server Error'})
+                            res.end()
+                        }
+                        else {
+                            userModel.findOneAndUpdate({email : userEmail} , {image : result.url, imageId : result.fileId} , (err, response) => {
+                                if(err) {
+                                    res.status(500).send({data : 'Internal Server Error'})
+                                    res.end()
+                                }else {
+                                    res.status(200).send({data : result.url})
+                                    res.end()
+                                }
+                            })
+                        }
+                    })
+                }
+
+            }else {
+                res.status(400).send({data : 'UnAuthorized'})
+                res.end()
+            }
+        })
+
+    }catch(err) {
+        res.status(500).send({data : 'Internal Server Error'})
+        res.end()
+    }
+
+
+    
+}
+
+const getImage = (req, res) => {
+    const email = req.params.email
+    userModel.findOne({email : email}, (err, found) => {
+        if(err) {
+            res.status(500).send({data : 'Internal Server Error'})
+            res.end()
+        }else if(found) {
+            console.log('Founded ')
+            res.status(200).send({imageUrl : found.image})
+            res.end()
+        }
+    })
+}
+
 module.exports = {
     save: saveUser,
     login: loginUser,
     getUser : getUser,
     getAllUser : getAllUser,
-    checkUser :checkUser
+    checkUser :checkUser,
+    uploadImage : uploadImage,
+    getImage : getImage
 }

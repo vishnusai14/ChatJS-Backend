@@ -13,6 +13,15 @@ const userSchema = new mongoose.Schema({
     },
     password: {
         type : String
+    },
+    image : {
+        type : String
+    },
+    imageId : {
+        type : String
+    },
+    expoToken : {
+        type : String
     }
 
 })

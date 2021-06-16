@@ -4,8 +4,8 @@ const socketFunction = require('../database/functions/socketFunctions')
 const messageFunction = require('../database/functions/messageToSendFunctions')
 const jwt = require('jsonwebtoken')
 const SECRET = process.env.SECRET
-
-
+const userModel = require('../database/db').user
+const sendPushNotification = require('../notifications/notification')
 const socketConnection = (server) => {
     const io = socket(server , {
         cors : {
@@ -33,6 +33,13 @@ const socketConnection = (server) => {
         socket.on('msg', (msgData) => {
             console.log("Message Event Fired Up")
             socketFunction.sendOrStoreMessage(msgData, io)
+            userModel.findOne({email : msgData.email} , (err, found) => {
+                if(err) {
+                    console.log(err)
+                }else {
+                    sendPushNotification(found.expoToken, msgData.msg)
+                }
+            })
             
         })
 

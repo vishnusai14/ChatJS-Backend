@@ -22,6 +22,7 @@ const getAllMessage = (req, res) => {
 
     const token = req.body.token
     const email = req.body.email
+    console.log(email)
 
     try {
 
@@ -29,6 +30,7 @@ const getAllMessage = (req, res) => {
         if(user) {
             console.log(user)
             const senderEmail = user.email
+            console.log(senderEmail)
             let messages = []
             messageModel.find({}, (err, found) => {
                 if(err) {

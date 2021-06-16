@@ -17,6 +17,13 @@ Router.post('/checkUser' , (req, res) => {
     userFunction.checkUser(req, res)
 })
 
+Router.post("/uploadimage", (req, res) => {
+    userFunction.uploadImage(req, res)
+})
+
+Router.get('/getImage/:email', (req, res) => {
+    userFunction.getImage(req, res)
+})
 
 
 module.exports = Router
