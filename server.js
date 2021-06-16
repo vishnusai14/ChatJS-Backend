@@ -25,13 +25,13 @@ app.get('/', (req, res) => {
 })
 
 //auth Route
-app.use('/api/v1/auth', require('../ChatJS-Backend/Routes/auth/auth'))
+app.use('/api/v1/auth', require('./Routes/auth/auth'))
 
 //user Route
-app.use('/api/v1/user', require('../ChatJS-Backend/Routes/user/user'))
+app.use('/api/v1/user', require('./Routes/user/user'))
 
 //message route
-app.use('/api/v1/message', require('../ChatJS-Backend/Routes/message/message'))
+app.use('/api/v1/message', require('./Routes/message/message'))
 
 const server = app.listen(PORT, () => {
     console.log(`The Server is started in Port ${PORT}`)
