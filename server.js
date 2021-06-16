@@ -1,3 +1,4 @@
+require('dotenv').config()
 const express = require('express')
 const cors = require('cors')
 const app = express()
@@ -8,7 +9,9 @@ app.use(express.json({limit : '50mb'}))
 app.use(cors())
 const socket = require('socket.io')
 
-db.connect('mongodb://localhost:27017/ChatJsvFive')
+const monogDbUri = `mongodb+srv://Vishnu_Sai:${process.env.DBPASS}@cluster0.hkghe.mongodb.net/${process.env.DBNAME}?retryWrites=true&w=majority`
+
+db.connect(monogDbUri)
 
 
 const PORT = process.env.PORT || 1331
@@ -16,7 +19,8 @@ const PORT = process.env.PORT || 1331
 //For Checking
 app.get('/', (req, res) => {
 
-    res.sendFile('E:/chat-app/ChatJS-Backend/ChatJS-Backend/index.html')
+   res.status(200).send("API WORKS")
+   res.end()
 
 })
 
