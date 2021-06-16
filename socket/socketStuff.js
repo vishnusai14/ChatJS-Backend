@@ -9,7 +9,7 @@ const sendPushNotification = require('../notifications/notification')
 const socketConnection = (server) => {
     const io = socket(server , {
         cors : {
-            origin : 'http://localhost:1331',
+            origin : 'https://chat2js.herokuapp.com',
             credentials: true
         }
     })
