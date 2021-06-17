@@ -5,11 +5,12 @@ const messageFunction = require('../database/functions/messageToSendFunctions')
 const jwt = require('jsonwebtoken')
 const SECRET = process.env.SECRET
 const userModel = require('../database/db').user
+const userFriendModel = require('../database/db').userFriendModel
 const sendPushNotification = require('../notifications/notification')
 const socketConnection = (server) => {
     const io = socket(server , {
         cors : {
-            origin : 'https://chat2js.herokuapp.com',
+            origin : 'http://localhost:1331',
             credentials: true
         }
     })

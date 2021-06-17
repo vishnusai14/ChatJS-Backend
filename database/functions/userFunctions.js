@@ -1,6 +1,7 @@
 require('dotenv').config()
 const bcrypt = require('bcryptjs')
 const userModel = require('../db').user
+const userFriendModel = require('../db').userFriendModel
 const generateUniqueId = require('generate-unique-id')
 const jwt = require('jsonwebtoken')
 const SECRET = process.env.SECRET
@@ -53,8 +54,13 @@ const saveUser = (req, res) => {
                         socketId : socketId,
                         expoToken : expoToken
                     })
+                    const newUserFriendModel = new userFriendModel({
+                        email : email,
+                        friends : []
+                    })
                     newUserModel.save()
-                    const token = jwt.sign({email : email, id: userId}, SECRET)
+                    newUserFriendModel.save()
+                    const token = jwt.sign({email : email, id: userId, userName : userName}, SECRET)
                     res.status(200).send({ data: token })
                     res.end()
                 }
@@ -79,10 +85,16 @@ const loginUser = (req, res) => {
 
                 bcrypt.compare(password, found.password, (err, isEqual) => {
                     if (isEqual) {
-
-                        const token = jwt.sign({ email: email, id: found.userId }, SECRET)
-                        res.status(200).send({ data: token })
-                        res.end()
+                        userModel.findOneAndUpdate({email : email} , {expoToken : req.body.expoToken} , (err , response) => {
+                            if(err) {
+                                console.log(err)
+                            }else {
+                                const token = jwt.sign({ email: email, id: found.userId }, SECRET)
+                                res.status(200).send({ data: token })
+                                res.end()
+                            }
+                        })
+                        
                     } else {
                         res.status(400).send({data : 'Unuthorized'})
                     }
@@ -155,12 +167,17 @@ const getAllUser = (req, res) => {
 
 
 const checkUser = (req, res) => {
+    console.log('Checking User')
     userModel.findOne({userId : req.body.id} , (err, found) => {
         if(err) {
             res.status(500).send({data : 'Internal Server Error'})
             res.end()
         }else if(found) {
-            res.status(200).send({data : found.email})
+            let userData = {
+                email : found.email,
+                userName : found.userName
+            }
+            res.status(200).send({data : userData})
             res.end()
         }else {
             res.status(400).send({data : 'User Not Found'})
